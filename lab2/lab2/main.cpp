@@ -1,0 +1,6 @@
+#include "Image.h"
+#include <iostream>
+#include <filesystem>
+#include <string>
+namespace filters {Image toGray(const Image&);Image sobel(const Image&);Image roberts(const Image&);Image laplace(const Image&);Image meanFilter(const Image&,int);Image gaussFilter(const Image&,int,double);Image medianFilter(const Image&,int);Image minFilter(const Image&,int);Image maxFilter(const Image&,int);}
+int main(int argc,char** argv){try{if(argc<2){std::cerr<<"Usage: program <input.png> [noisy.png] [output_dir]\n";return 1;}Image original(argv[1]);Image noisy(argc>2?argv[2]:argv[1]);std::string dir=argc>3?argv[3]:"results";std::filesystem::create_directories(dir);auto save=[&](const Image& im,const char* name){std::string p=dir+"/"+name;if(!im.isWrite(p))throw std::runtime_error("Failed to save "+p);std::cout<<p<<'\n';};save(filters::toGray(original),"gray.png");save(filters::sobel(original),"sobel.png");save(filters::roberts(original),"roberts.png");save(filters::laplace(original),"laplace.png");save(filters::meanFilter(noisy,3),"mean.png");save(filters::gaussFilter(noisy,3,1.0),"gauss.png");save(filters::medianFilter(noisy,3),"median.png");save(filters::minFilter(noisy,3),"min.png");save(filters::maxFilter(noisy,3),"max.png");return 0;}catch(const std::exception& e){std::cerr<<"Error: "<<e.what()<<'\n';return 1;}}
